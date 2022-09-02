@@ -367,6 +367,8 @@ impl GuardSet {
             },
         );
 
+        // let is_partial = candidates.len() < n_candidates;
+
         // Add those candidates to the sample, up to our maximum weight.
         let mut any_added = false;
         let mut n_filtered_usable = n_filtered_usable;
@@ -392,27 +394,36 @@ impl GuardSet {
                 n_filtered_usable += 1;
             }
             current_weight += candidate_weight;
-            self.add_guard(&candidate, now, params);
-            any_added = true;
+            // self.add_guard(&candidate, now, params);
+            // any_added = true;
+
+            let is_added = self.add_guard(&candidate, now, params);
+            if !any_added && is_added {
+                any_added = true;
+            }
         }
 
         self.assert_consistency();
+        // if is_partial {
+        //     return false
+        // }
         any_added
     }
 
     /// Add `relay` as a new guard.
     ///
     /// Does nothing if it is already a guard.
-    fn add_guard(&mut self, relay: &Relay<'_>, now: SystemTime, params: &GuardParams) {
+    fn add_guard(&mut self, relay: &Relay<'_>, now: SystemTime, params: &GuardParams) -> bool {
         let id = GuardId::from_relay_ids(relay);
         if self.guards.contains_key(&id) {
-            return;
+            return false;
         }
         debug!(guard_id=?id, "Adding guard to sample.");
         let guard = Guard::from_relay(relay, now, params);
         self.guards.insert(id.clone(), guard);
         self.sample.push(id);
         self.primary_guards_invalidated = true;
+        return true;
     }
 
     /// Return the number of our primary guards are missing their

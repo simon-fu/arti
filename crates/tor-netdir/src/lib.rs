@@ -66,6 +66,9 @@ mod err;
 pub mod params;
 mod weight;
 
+/// TODO: add doc
+pub mod hack_netdir;
+
 #[cfg(any(test, feature = "testing"))]
 pub mod testnet;
 
@@ -871,6 +874,11 @@ impl NetDir {
         R: rand::Rng,
         P: FnMut(&Relay<'a>) -> bool,
     {
+        let r = hack_netdir::hack().pick_relay(self, rng, role, &usable);
+        if r.is_some() {
+            return r;
+        }
+
         use rand::seq::SliceRandom;
         let relays: Vec<_> = self.relays().filter(usable).collect();
         // This algorithm uses rand::distributions::WeightedIndex, and uses
@@ -924,6 +932,11 @@ impl NetDir {
         R: rand::Rng,
         P: FnMut(&Relay<'a>) -> bool,
     {
+        let r = hack_netdir::hack().pick_n_relays(self, rng, n, role, &usable);
+        if let Some(relays) = r {
+            return relays
+        }
+
         use rand::seq::SliceRandom;
         let relays: Vec<_> = self.relays().filter(usable).collect();
         // NOTE: See discussion in pick_relay().

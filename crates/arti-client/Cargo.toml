@@ -76,18 +76,20 @@ tor-dirmgr = { path = "../tor-dirmgr", version = "0.6.0" }
 tor-error = { path = "../tor-error", version = "0.3.2" }
 tor-guardmgr = { path = "../tor-guardmgr", version = "0.5.0" }
 tor-llcrypto = { path = "../tor-llcrypto", version = "0.3.3" }
-tor-netdir = { path = "../tor-netdir", version = "0.5.0" }
+tor-netdir = { path = "../tor-netdir", version = "0.5.0", features = [ "experimental-api" ]}
 tor-netdoc = { path = "../tor-netdoc", version = "0.5.0" }
 tor-persist = { path = "../tor-persist", version = "0.5.0" }
 tor-proto = { path = "../tor-proto", version = "0.5.0" }
 tor-rtcompat = { path = "../tor-rtcompat", version = "0.5.0" }
 tracing = "0.1.18"
 
-[dev-dependencies]
-anyhow = "1.0.23"
-once_cell = "1.9"
-pin-project = "1"
-tempfile = "3.3"
+fast-socks5 = "0.8.1"
+parking_lot = "=0.11.2"
+rand = "0.8.5"
+strum = { version = "0.24", features = ["derive"] }
+base64 = "0.13.0"
+
+tokio-util = { version = "0.7.0", features = ["compat"] }
 tokio-crate = { package = "tokio", version = "1.7", features = [
     "rt",
     "rt-multi-thread",
@@ -96,9 +98,27 @@ tokio-crate = { package = "tokio", version = "1.7", features = [
     "time",
     "macros",
 ] }
-tokio-util = { version = "0.7.0", features = ["compat"] }
+
+[dev-dependencies]
+anyhow = "1.0.23"
+once_cell = "1.9"
+pin-project = "1"
+tempfile = "3.3"
+# tokio-crate = { package = "tokio", version = "1.7", features = [
+#     "rt",
+#     "rt-multi-thread",
+#     "io-util",
+#     "net",
+#     "time",
+#     "macros",
+# ] }
+# tokio-util = { version = "0.7.0", features = ["compat"] }
 tor-rtcompat = { path = "../tor-rtcompat", version = "0.5.0", features = ["tokio", "native-tls"] }
 tracing-subscriber = "0.3.0"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "readme"
+required-features = ["experimental-api"]

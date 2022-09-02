@@ -67,6 +67,13 @@ tracing-subscriber = { version = "0.3.0", features = ["env-filter"] }
 trust-dns-proto = { version = "0.21.1", optional = true }
 visibility = { version = "0.0.1", optional = true }
 
+fast-socks5 = "0.8.1"
+tokio-util = { version = "0.7.0", features = ["compat"] }
+parking_lot = "=0.11.2"
+rand = "0.8.5"
+tor-netdir = { path = "../tor-netdir", version = "0.5.0", features = [ "experimental-api" ]}
+
+
 [dev-dependencies]
 itertools = "0.10.1"
 regex = { version = "1", default-features = false, features = ["std"] }

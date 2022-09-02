@@ -247,13 +247,33 @@ fn list_enabled_features() -> &'static [&'static str] {
 /// Currently, might panic if things go badly enough wrong
 #[cfg_attr(feature = "experimental-api", visibility::make(pub))]
 async fn run<R: Runtime>(
-    runtime: R,
+    _runtime: R,
     socks_port: u16,
     dns_port: u16,
     config_sources: ConfigurationSources,
     arti_config: ArtiConfig,
     client_config: TorClientConfig,
 ) -> Result<()> {
+
+    let guard_ids = vec![
+        "FK7SwWET47+2UjP1b03TqGbGo4uJnjhomp4CnH7Ntv8",
+        "ciWaq9i2Xj4qVPcx9pLfRP9b6J9T1ZwEnC83blSpUcc",
+        "5nHccFo2jQ2b7PDxEdY5vNcPn++nHZJRW32SbLJMqnQ",
+        "w2j7gp0fAqDOsHt8ruIJM6wdFZz3/UEMiH4MGw3behE",
+        "TipUY3Pag9HRNflLHLlXaePDfaCMUVLOMHabRN3nU6g",
+    ];
+    let ids = tor_netdir::hack_netdir::make_ids(guard_ids)?;
+    *tor_netdir::hack_netdir::hack().data().guards_mut() = Some(ids);
+
+    let socks_args = Some(arti_client::box_socks::SocksArgs {
+        server: "127.0.0.1:7890".to_owned(),
+        username: None,
+        password: None,
+        max_targets: Some(0),
+    });
+
+    let runtime = arti_client::box_socks::create_runtime(socks_args)?;
+
     // Using OnDemand arranges that, while we are bootstrapping, incoming connections wait
     // for bootstrap to complete, rather than getting errors.
     use arti_client::BootstrapBehavior::OnDemand;
