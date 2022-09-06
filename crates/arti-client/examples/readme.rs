@@ -22,7 +22,7 @@ use arti_client::{config::TorClientConfigBuilder, TorClient, StreamPrefs};
 use futures::{AsyncWriteExt, AsyncReadExt};
 use strum::EnumString;
 use tokio::net::TcpStream;
-use tor_netdir::{NetDir, hack_prefer_guards};
+use tor_netdir::{NetDir, hack_netdir};
 
 
 
@@ -199,7 +199,9 @@ async fn simple_proxy() -> Result<()> {
         "w2j7gp0fAqDOsHt8ruIJM6wdFZz3/UEMiH4MGw3behE",
         "TipUY3Pag9HRNflLHLlXaePDfaCMUVLOMHabRN3nU6g",
     ];
-    hack_prefer_guards::set_prefer_guards_str(guard_ids)?;
+    // hack_netdir::set_prefer_guards_str(guard_ids)?;
+    let ids = hack_netdir::make_ids(guard_ids)?;
+    *hack_netdir::hack().data().guards_mut() = Some(ids);
 
     let mut builder = TorClientConfigBuilder::from_directories(STATE_DIR, CACHE_DIR);
     
